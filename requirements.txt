@@ -7,3 +7,7 @@ python-multipart
 python-dotenv
 uvicorn
 tavily-python
+transformers
+tokenizers
+datasets
+mistral_inference

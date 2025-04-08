@@ -1,18 +1,121 @@
-<!-- templates/form.html -->
-<html>
-  <head>
-    <title>FastAPI Form Example</title>
-  </head>
-  <body>
-    <h1>Prompt a Model</h1>
-    <form method="post">
-      <label for="prompt">Enter a prompt:</label>
-      <input type="text" id="prompt" name="prompt" required />
-      <button type="submit">Submit</button>
-    </form>
-    {% if response %}
-    <h2>Response:</h2>
-    <p>{{ response }}</p>
-    {% endif %}
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .chat-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            margin-left: auto;
+        }
+        .bot-message {
+            background-color: #e9ecef;
+            color: black;
+            margin-right: auto;
+        }
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .chat-input button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .chat-input button:hover {
+            background-color: #0056b3;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin: 10px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>AI Chat Assistant</h1>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            {% if response %}
+            <div class="message user-message">{{ prompt }}</div>
+            <div class="message bot-message">{{ response }}</div>
+            {% endif %}
+        </div>
+        <div class="loading" id="loading">AI is thinking...</div>
+        <form method="post" id="chat-form" onsubmit="showLoading()">
+            <div class="chat-input">
+                <input type="text" 
+                       id="prompt" 
+                       name="prompt" 
+                       required 
+                       placeholder="Type your message here..."
+                       autocomplete="off">
+                <button type="submit">Send</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('chat-form').querySelector('button').disabled = true;
+        }
+
+        // Scroll to bottom of chat messages
+        window.onload = function() {
+            var chatMessages = document.getElementById('chat-messages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        };
+    </script>
+</body>
 </html>
