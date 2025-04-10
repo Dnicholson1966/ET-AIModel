@@ -3,106 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat Interface</title>
+    <title>Chatty AI Assistant</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
         }
-        .chat-container {
-            max-width: 800px;
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0061ff, #6c3bff);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 20px;
+            width: 100%;
         }
-        .chat-header {
+
+        .logo-container {
             text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            margin: 40px 0;
+            color: white;
         }
+
+        .logo-text {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: #fff;
+        }
+
+        .chat-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
         .chat-messages {
-            height: 400px;
+            flex: 1;
             overflow-y: auto;
-            margin-bottom: 20px;
-            padding: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
+
         .message {
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 15px;
             max-width: 80%;
-            word-wrap: break-word;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            line-height: 1.4;
+            position: relative;
         }
+
         .user-message {
-            background-color: #007bff;
+            background: linear-gradient(135deg, #0061ff, #60a5fa);
             color: white;
             margin-left: auto;
+            border-bottom-right-radius: 5px;
         }
+
         .bot-message {
-            background-color: #e9ecef;
-            color: black;
+            background: #f3f4f6;
+            color: #1f2937;
             margin-right: auto;
+            border-bottom-left-radius: 5px;
         }
+
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+
         .chat-input {
             display: flex;
             gap: 10px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
+
         .chat-input input {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            outline: none;
         }
+
+        .chat-input input:focus {
+            border-color: #0061ff;
+        }
+
         .chat-input button {
-            padding: 10px 20px;
-            background-color: #007bff;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #0061ff, #6c3bff);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: opacity 0.3s;
         }
+
         .chat-input button:hover {
-            background-color: #0056b3;
+            opacity: 0.9;
         }
+
         .loading {
             text-align: center;
-            color: #666;
-            font-style: italic;
-            margin: 10px 0;
+            color: #6b7280;
+            padding: 10px;
             display: none;
+        }
+
+        .bottom-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .bottom-bar span {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 10px;
+            }
+
+            .logo-text {
+                font-size: 2.5rem;
+            }
+
+            .message {
+                max-width: 90%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <h1>AI Chat Assistant</h1>
+    <div class="app-container">
+        <div class="logo-container">
+            <div class="logo-text">Chatty</div>
+            <div style="font-size: 2.5rem;">🤖 Chatty</div>
         </div>
-        <div class="chat-messages" id="chat-messages">
-            {% if response %}
-            <div class="message user-message">{{ prompt }}</div>
-            <div class="message bot-message">{{ response }}</div>
-            {% endif %}
-        </div>
-        <div class="loading" id="loading">AI is thinking...</div>
-        <form method="post" id="chat-form" onsubmit="showLoading()">
-            <div class="chat-input">
-                <input type="text" 
-                       id="prompt" 
-                       name="prompt" 
-                       required 
-                       placeholder="Type your message here..."
-                       autocomplete="off">
-                <button type="submit">Send</button>
+        
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+                {% if response %}
+                <div class="message user-message">{{ prompt }}</div>
+                <div class="message bot-message">{{ response }}</div>
+                {% endif %}
             </div>
-        </form>
+            
+            <div class="loading" id="loading">AI is thinking... 🤔</div>
+            
+            <div class="input-container">
+                <form method="post" id="chat-form" onsubmit="showLoading()">
+                    <div class="chat-input">
+                        <input type="text" 
+                               id="prompt" 
+                               name="prompt" 
+                               required 
+                               placeholder="Ask me anything..."
+                               autocomplete="off">
+                        <button type="submit">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <span>🤖 AI Assistant</span>
+        <span>Powered by Hugging Face</span>
     </div>
 
     <script>
@@ -111,7 +213,6 @@
             document.getElementById('chat-form').querySelector('button').disabled = true;
         }
 
-        // Scroll to bottom of chat messages
         window.onload = function() {
             var chatMessages = document.getElementById('chat-messages');
             chatMessages.scrollTop = chatMessages.scrollHeight;
