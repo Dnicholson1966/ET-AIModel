@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walmart Store Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .header {
+            background-color: #0071ce;
+            padding: 15px 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+        }
+
+        .walmart-logo {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .assistant-name {
+            font-size: 1.5rem;
+            border-left: 2px solid rgba(255, 255, 255, 0.5);
+            padding-left: 15px;
+        }
+
+        .chat-container {
+            flex: 1;
+            background: white;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+        }
+
+        .query-type-container {
+            background: #f2f8ff;
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .query-button {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #0071ce;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #0071ce;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .query-button:hover, .query-button.active {
+            background: #0071ce;
+            color: white;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M30,10 L70,10 L70,90 L30,90 Z" fill="%23ffc22000" /></svg>') center / 20% no-repeat;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .user-message {
+            background: #e9f0fd;
+            color: #2a2a2a;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+            border: 1px solid #d1e0fb;
+        }
+
+        .bot-message {
+            background: #0071ce;
+            color: white;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+
+        .quick-actions {
+            padding: 10px 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .action-button {
+            padding: 10px 15px;
+            background: #ffc220;
+            color: #2a2a2a;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .action-button:hover {
+            background: #ffb100;
+        }
+
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+
+        .chat-input input:focus {
+            border-color: #0071ce;
+        }
+
+        .chat-input button {
+            padding: 15px 30px;
+            background: #0071ce;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .chat-input button:hover {
+            background: #005cb8;
+        }
+
+        .button-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mic-button {
+            padding: 15px;
+            background: #f2f2f2;
+            border: none;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .mic-button:hover {
+            background: #e5e5e5;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 10px;
+            display: none;
+        }
+
+        .footer {
+            background: #0071ce;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-size: 0.9rem;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .help-section {
+            display: flex;
+            gap: 15px;
+        }
+
+        .help-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .help-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 10px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div class="logo-container">
+                <div class="walmart-logo">Walmart</div>
+                <div class="assistant-name">Store Assistant</div>
+            </div>
+            <div style="color: white; font-size: 1.5rem;">🛒</div>
+        </div>
+
+        <div class="chat-container">
+            <div class="query-type-container">
+                <button class="query-button active">General Help</button>
+                <button class="query-button">Product Finder</button>
+                <button class="query-button">Price Check</button>
+                <button class="query-button">Store Information</button>
+                <button class="query-button">Offers & Coupons</button>
+                <button class="query-button">Pickup & Delivery</button>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot-message">
+                    Welcome to Walmart! I'm your Store Assistant. How can I help you today?
+                </div>
+                {% if response %}
+                <div class="message user-message">{{ prompt }}</div>
+                <div class="message bot-message">{{ response }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="loading" id="loading">Finding the best answer for you... <img src="/api/placeholder/50/20" alt="loading" /></div>
+            
+            <div class="quick-actions">
+                <button class="action-button">🔍 Find an item</button>
+                <button class="action-button">⌚ Store hours</button>
+                <button class="action-button">📱 Walmart+</button>
+                <button class="action-button">🛒 Check order status</button>
+                <button class="action-button">💵 Price match</button>
+            </div>
+
+            <div class="input-container">
+                <form method="post" id="chat-form" onsubmit="showLoading()">
+                    <div class="chat-input">
+                        <input type="text" 
+                               id="prompt" 
+                               name="prompt" 
+                               required 
+                               placeholder="Ask me about products, locations, prices, or services..."
+                               autocomplete="off">
+                        <div class="button-controls">
+                            <button class="mic-button" type="button">🎤</button>
+                            <button type="submit">Ask</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>Walmart Store Assistant</span>
+            <div class="help-section">
+                <button class="help-button">Call Associate</button>
+                <button class="help-button">Help</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('chat-form').querySelector('button[type="submit"]').disabled = true;
+        }
+
+        window.onload = function() {
+            var chatMessages = document.getElementById('chat-messages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Add click handlers for query-type buttons
+            var queryButtons = document.querySelectorAll('.query-button');
+            queryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    queryButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                });
+            });
+        };
+    </script>
+</body>
+</html>

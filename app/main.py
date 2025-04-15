@@ -27,15 +27,22 @@ templates = Jinja2Templates(directory="app/templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_form(request: Request):
-    return templates.TemplateResponse("form.html", {"request": request})
+    return templates.TemplateResponse("WalmartKiosk.html", {"request": request})
 
 @app.post("/", response_class=HTMLResponse)
 async def process_form(request: Request, prompt: str = Form(...)):
+    # Enhance the prompt with Walmart context
+    walmart_context = "You are a Walmart Store Assistant AI. Provide helpful, friendly responses "\
+                     "about Walmart products, services, store information, and policies. "\
+                     "Keep responses concise and focused on Walmart-related information."
+    
+    enhanced_prompt = f"{walmart_context}\n\nCustomer question: {prompt}"
+    
     # Generate response using our AI model
-    response = generate_description(prompt)
+    response = generate_description(enhanced_prompt)
     
     # Pass both prompt and response back to template
-    return templates.TemplateResponse("form.html", {
+    return templates.TemplateResponse("WalmartKiosk.html", {
         "request": request,
         "prompt": prompt,
         "response": response
