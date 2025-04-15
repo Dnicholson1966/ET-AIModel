@@ -1,13 +1,9 @@
-requests
-responses
 fastapi
-openai==0.28
 jinja2
 python-multipart
-python-dotenv
 uvicorn
-tavily-python
-transformers
+transformers>=4.34.0
+torch>=2.0.0
+sentencepiece>=0.1.99
 tokenizers
 datasets
-mistral_inference

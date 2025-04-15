@@ -29,23 +29,55 @@ templates = Jinja2Templates(directory="app/templates")
 async def read_form(request: Request):
     return templates.TemplateResponse("WalmartKiosk.html", {"request": request})
 
+from enum import Enum
+from typing import Optional
+
+class QueryType(Enum):
+    PRODUCT = "product"
+    PRICE = "price"
+    LOCATION = "location"
+    SERVICE = "service"
+    POLICY = "policy"
+    GENERAL = "general"
+
+def detect_query_type(prompt: str) -> QueryType:
+    prompt_lower = prompt.lower()
+    if any(word in prompt_lower for word in ["cost", "price", "discount", "deal", "save"]):
+        return QueryType.PRICE
+    elif any(word in prompt_lower for word in ["where", "location", "nearest", "find", "store"]):
+        return QueryType.LOCATION
+    elif any(word in prompt_lower for word in ["service", "pharmacy", "auto", "vision", "photo"]):
+        return QueryType.SERVICE
+    elif any(word in prompt_lower for word in ["policy", "return", "exchange", "warranty", "guarantee"]):
+        return QueryType.POLICY
+    elif any(word in prompt_lower for word in ["product", "item", "sell", "stock", "inventory"]):
+        return QueryType.PRODUCT
+    return QueryType.GENERAL
+
 @app.post("/", response_class=HTMLResponse)
 async def process_form(request: Request, prompt: str = Form(...)):
-    # Enhance the prompt with Walmart context
-    walmart_context = "You are a Walmart Store Assistant AI. Provide helpful, friendly responses "\
-                     "about Walmart products, services, store information, and policies. "\
-                     "Keep responses concise and focused on Walmart-related information."
+    # Detect the type of query
+    query_type = detect_query_type(prompt)
     
-    enhanced_prompt = f"{walmart_context}\n\nCustomer question: {prompt}"
+    # Add specific context based on query type
+    query_contexts = {
+        QueryType.PRODUCT: "Focus on product features, availability, and alternatives. Mention Walmart+ benefits for faster shopping.",
+        QueryType.PRICE: "Emphasize Everyday Low Prices, price matching, rollbacks, and current deals. Suggest Walmart+ for extra savings.",
+        QueryType.LOCATION: "Provide store hours, suggest using the Walmart app for exact locations and inventory, mention curbside pickup.",
+        QueryType.SERVICE: "Detail service hours, appointment scheduling if needed, and related Walmart+ benefits.",
+        QueryType.POLICY: "Explain policies clearly, mention exceptions, and suggest speaking with a store manager for special cases.",
+        QueryType.GENERAL: "Provide helpful general information while highlighting relevant Walmart services and benefits."
+    }
     
-    # Generate response using our AI model
-    response = generate_description(enhanced_prompt)
+    # Generate response using our AI model with enhanced context
+    response = generate_description(f"{prompt}\n\nContext: {query_contexts[query_type]}")
     
     # Pass both prompt and response back to template
     return templates.TemplateResponse("WalmartKiosk.html", {
         "request": request,
         "prompt": prompt,
-        "response": response
+        "response": response,
+        "query_type": query_type.value  # Pass query type to template for potential UI customization
     })
 
 ## Start of API endpoints (testers)
